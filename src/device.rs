@@ -448,7 +448,10 @@ pub struct DeviceBuilder<'a> {
   extensions: BootstrapSmallVec<(*const c_char, bool)>,
   preferred_version: Option<u32>,
   required_version: u32,
-  required_features: Option<&'a vk::PhysicalDeviceFeatures2>,
+  features_1_0: vk::PhysicalDeviceFeatures,
+  features_1_1: vk::PhysicalDeviceVulkan11Features,
+  features_1_2: vk::PhysicalDeviceVulkan12Features,
+  features_1_3: vk::PhysicalDeviceVulkan13Features,
   unconditional_nth: Option<usize>,
   allocator: Option<vk::AllocationCallbacks>,
 }
@@ -474,7 +477,10 @@ impl<'a> DeviceBuilder<'a> {
       extensions: BootstrapSmallVec::new(),
       preferred_version: None,
       required_version: vk::API_VERSION_1_0,
-      required_features: None,
+      features_1_0: vk::PhysicalDeviceFeatures::default(),
+      features_1_1: vk::PhysicalDeviceVulkan11Features::default(),
+      features_1_2: vk::PhysicalDeviceVulkan12Features::default(),
+      features_1_3: vk::PhysicalDeviceVulkan13Features::default(),
       unconditional_nth: None,
       allocator: None,
     }
@@ -601,11 +607,30 @@ impl<'a> DeviceBuilder<'a> {
   }
 
   /// Require these features to be present for the device.
-  /// The elements of the pointer chain will only be considered if possible.
-  /// The features will be enabled.
   #[inline]
-  pub fn require_features(mut self, features: &'a vk::PhysicalDeviceFeatures2) -> Self {
-    self.required_features = Some(features);
+  pub fn set_required_features_10(mut self, features: vk::PhysicalDeviceFeatures) -> Self {
+    self.features_1_0 = features;
+    self
+  }
+
+  /// Require these features to be present for the device.
+  #[inline]
+  pub fn set_required_features_11(mut self, features: vk::PhysicalDeviceVulkan11Features) -> Self {
+    self.features_1_1 = features;
+    self
+  }
+
+  /// Require these features to be present for the device.
+  #[inline]
+  pub fn set_required_features_12(mut self, features: vk::PhysicalDeviceVulkan12Features) -> Self {
+    self.features_1_2 = features;
+    self
+  }
+
+  /// Require these features to be present for the device.
+  #[inline]
+  pub fn set_required_features_13(mut self, features: vk::PhysicalDeviceVulkan13Features) -> Self {
+    self.features_1_3 = features;
     self
   }
 
@@ -810,16 +835,27 @@ impl<'a> DeviceBuilder<'a> {
         .queue_create_infos(&queue_create_infos)
         .enabled_extension_names(&candidate.enabled_extensions);
 
-      let mut required_features;
-      if let Some(&val) = self.required_features {
-        required_features = val;
+      let mut required_features = vk::PhysicalDeviceFeatures2::default();
+      required_features.features = self.features_1_0;
 
-        if features2_supported {
-          device_info = device_info.push_next(&mut required_features);
-        } else {
-          device_info = device_info.enabled_features(&required_features.features);
+      if self.required_version > vk::make_api_version(0, 1,1,0){
+        required_features.p_next = &self.features_1_1 as *const _ as *mut _;
+        if self.required_version > vk::make_api_version(0, 1,2,0){
+          self.features_1_2.p_next = &self.features_1_1 as *const _ as *mut _;
+          required_features.p_next = &self.features_1_2 as *const _ as *mut _;
+          if self.required_version > vk::make_api_version(0, 1,3,0){
+            self.features_1_2.p_next = &self.features_1_1 as *const _ as *mut _;
+            self.features_1_3.p_next = &self.features_1_2 as *const _ as *mut _;
+            required_features.p_next = &self.features_1_3 as *const _ as *mut _;
+          }
         }
       }
+      if features2_supported {
+        device_info = device_info.push_next(&mut required_features);
+      } else {
+        device_info = device_info.enabled_features(&required_features.features);
+      }
+
 
       let device_handle = instance.create_device(candidate.physical_device, &device_info, self.allocator.as_ref());
       match device_handle {

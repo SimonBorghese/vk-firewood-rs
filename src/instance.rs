@@ -625,11 +625,14 @@ impl<'a> Default for InstanceBuilder<'a> {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use erupt::EntryLoader;
+  use ash::Entry;
 
   #[test]
   fn basic() {
-    let entry = EntryLoader::new().unwrap();
+    let entry;
+    unsafe {
+      entry = Entry::load().unwrap();
+    }
     let (instance, _debug_messenger, _metadata) = unsafe { InstanceBuilder::new().build(&entry).unwrap() };
 
     unsafe {
@@ -639,7 +642,10 @@ mod tests {
 
   #[test]
   fn validation_and_messenger() {
-    let entry = EntryLoader::new().unwrap();
+    let entry;
+    unsafe {
+      entry = Entry::load().unwrap();
+    }
     let (instance, debug_messenger, _metadata) = unsafe {
       InstanceBuilder::new()
         .validation_layers(ValidationLayers::Request)
@@ -649,8 +655,8 @@ mod tests {
     };
 
     unsafe {
-      if let Some(debug_messenger) = debug_messenger {
-        instance.destroy_debug_utils_messenger_ext(debug_messenger, None);
+      if let Some(debug_messenger) = debug_messenger.1 {
+        instance.dest(debug_messenger, None);
       }
 
       instance.destroy_instance(None);

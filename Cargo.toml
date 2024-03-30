@@ -1,11 +1,10 @@
 [package]
 name = "ash-bootstrap"
-version = "0.3.0"
-authors = ["Friz64 <friz64mc@protonmail.com>", "Brandon Pollack <brandonpollack23@gmail.com>"]
-license = "Zlib"
+version = "0.3.1"
+authors = ["Friz64 <friz64mc@protonmail.com>", "Brandon Pollack <brandonpollack23@gmail.com>", "Simon Borghese"]
+license = "MIT"
 description = "vk-bootstrap for Rust"
-documentation = "https://docs.rs/ash-bootstrap"
-repository = "https://gitlab.com/brandonpollack23/ash-bootstrap"
+repository = "https://gitlab.com/SimonBorghese/vk-firewood-rs"
 readme = "README.md"
 keywords = ["gamedev", "graphics", "vulkan"]
 categories = ["game-development", "graphics"]
