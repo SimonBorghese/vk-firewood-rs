@@ -338,7 +338,7 @@ impl SwapchainOptions {
   /// Number of frames that may be concurrently worked on, including recording
   /// on the CPU. Defaults to 2.
   #[inline]
-  pub fn frames_in_flight(&mut self, frames: usize) -> &mut Self {
+  pub fn frames_in_flight(mut self, frames: usize) -> Self {
     self.frames_in_flight = frames;
     self
   }
@@ -346,7 +346,7 @@ impl SwapchainOptions {
   /// Preference-ordered list of image formats and color spaces. Defaults to
   /// 8-bit sRGB.
   #[inline]
-  pub fn format_preference(&mut self, formats: &[vk::SurfaceFormatKHR]) -> &mut Self {
+  pub fn format_preference(mut self, formats: &[vk::SurfaceFormatKHR]) -> Self {
     self.format_preference = formats.into();
     self
   }
@@ -354,7 +354,7 @@ impl SwapchainOptions {
   /// Preference-ordered list of presentation modes. Defaults to
   /// [`vk::PresentModeKHR::FIFO_KHR`].
   #[inline]
-  pub fn present_mode_preference(&mut self, modes: &[vk::PresentModeKHR]) -> &mut Self {
+  pub fn present_mode_preference(mut self, modes: &[vk::PresentModeKHR]) -> Self {
     self.present_mode_preference = modes.into();
     self
   }
@@ -362,7 +362,7 @@ impl SwapchainOptions {
   /// Required swapchain image usage flags. Defaults to
   /// [`vk::ImageUsageFlags::COLOR_ATTACHMENT`].
   #[inline]
-  pub fn usage(&mut self, usage: vk::ImageUsageFlags) -> &mut Self {
+  pub fn usage(mut self, usage: vk::ImageUsageFlags) -> Self {
     self.usage = usage;
     self
   }
@@ -370,7 +370,7 @@ impl SwapchainOptions {
   /// Requires swapchain image sharing mode. Defaults to
   /// [`vk::SharingMode::EXCLUSIVE`].
   #[inline]
-  pub fn sharing_mode(&mut self, mode: vk::SharingMode) -> &mut Self {
+  pub fn sharing_mode(mut self, mode: vk::SharingMode) -> Self {
     self.sharing_mode = mode;
     self
   }
@@ -378,7 +378,7 @@ impl SwapchainOptions {
   /// Requires swapchain image composite alpha. Defaults to
   /// [`vk::CompositeAlphaFlagsKHR::OPAQUE_KHR`].
   #[inline]
-  pub fn composite_alpha(&mut self, value: vk::CompositeAlphaFlagsKHR) -> &mut Self {
+  pub fn composite_alpha(mut self, value: vk::CompositeAlphaFlagsKHR) -> Self {
     self.composite_alpha = value;
     self
   }
