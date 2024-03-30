@@ -315,6 +315,12 @@ impl Swapchain {
       queue_present.map(|_| ())
     }
   }
+
+  /// Get the raw swapchain handle for vkguide.dev compatibility as vk-bootstrap
+  /// doesn't handle presentation on it's own
+  pub fn handle(&self) -> vk::SwapchainKHR{
+    self.handle
+  }
 }
 
 /// [`Swapchain`] configuration.

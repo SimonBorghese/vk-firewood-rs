@@ -838,12 +838,12 @@ impl<'a> DeviceBuilder<'a> {
       let mut required_features = vk::PhysicalDeviceFeatures2::default();
       required_features.features = self.features_1_0;
 
-      if self.required_version > vk::make_api_version(0, 1,1,0){
+      if self.required_version >= vk::make_api_version(0, 1,1,0){
         required_features.p_next = &self.features_1_1 as *const _ as *mut _;
-        if self.required_version > vk::make_api_version(0, 1,2,0){
+        if self.required_version >= vk::make_api_version(0, 1,2,0){
           self.features_1_2.p_next = &self.features_1_1 as *const _ as *mut _;
           required_features.p_next = &self.features_1_2 as *const _ as *mut _;
-          if self.required_version > vk::make_api_version(0, 1,3,0){
+          if self.required_version >= vk::make_api_version(0, 1,3,0){
             self.features_1_2.p_next = &self.features_1_1 as *const _ as *mut _;
             self.features_1_3.p_next = &self.features_1_2 as *const _ as *mut _;
             required_features.p_next = &self.features_1_3 as *const _ as *mut _;
