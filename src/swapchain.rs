@@ -144,12 +144,15 @@ impl Swapchain {
     device: &Device,
     surface_loader: &Surface,
     timeout_ns: u64,
+    enable_fences: bool,
   ) -> VkResult<AcquiredFrame> {
     let frame_index = self.frame_index;
     let next_frame_index = (self.frame_index + 1) % self.frames.len();
     let frame = &self.frames[frame_index];
     let acquire = frame.acquire;
-    device.wait_for_fences(&[frame.complete], true, timeout_ns)?;
+    if enable_fences {
+      device.wait_for_fences(&[frame.complete], true, timeout_ns)?;
+    }
 
     // Destroy swapchains that are guaranteed not to be in use now that this frame
     // has finished
