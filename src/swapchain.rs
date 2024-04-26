@@ -84,7 +84,7 @@ impl Swapchain {
   /// - Access to images obtained from [`images`](Self::images) must be
   ///   externally synchronized.
   #[inline]
-  pub unsafe fn destroy(&mut self, device: &Device) {
+  pub unsafe fn destroy(&self, device: &Device) {
     for frame in &self.frames {
       device.destroy_fence(frame.complete, None);
       device.destroy_semaphore(frame.acquire, None);
